@@ -1,0 +1,31 @@
+resilience4j:
+  ratelimiter:
+    instances:
+      userApi:
+        limitForPeriod: 3
+        limitRefreshPeriod: PT1S
+        timeoutDuration: PT0S
+        registerHealthIndicator: true
+        subscribeForEvents: true
+      adminApi:
+        limitForPeriod: 5
+        limitRefreshPeriod: PT6S
+        timeoutDuration: PT0S
+        registerHealthIndicator: true
+        subscribeForEvents: true
+      loginRateLimiter:
+        limitForPeriod: 3
+        limitRefreshPeriod: 24h
+        timeoutDuration: 0
+
+management:
+  endpoint:
+    health:
+      show-details: ALWAYS
+  health:
+    ratelimiters:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"

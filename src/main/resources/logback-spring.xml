@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Loki4jAppender configuration -->
+    <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+        <http>
+            <url>http://localhost:3100/loki/api/v1/push</url>
+        </http>
+        <format>
+            <label>
+                <pattern>
+                    job=spring-boot-demo,
+                    app=${name},
+                    host=${HOSTNAME},
+                    level=%level,
+                    class=%logger{36},
+                    type=%M,
+                    path=%X{path:-unknown},
+                    status=%X{status:-unknown}
+                </pattern>
+                <readMarkers>true</readMarkers>
+            </label>
+            <message>
+                <pattern>
+                    {
+                    "level":"%level",
+                    "class":"%logger{36}",
+                    "thread":"%thread",
+                    "message": "%message",
+                    "method": "%X{method}",
+                    "path": "%X{path}",
+                    "requestHeaders": "%X{headers}",
+                    "requestBody": "%X{requestBody}",
+                    "responseHeaders": "%X{responseHeaders}",
+                    "responseBody": "%X{responseBody}",
+                    "status": "%X{status}"
+                    }
+                </pattern>
+            </message>
+        </format>
+    </appender>
+
+
+    <!-- Root logger configuration -->
+    <root level="DEBUG">
+        <appender-ref ref="LOKI" />
+    </root>
+</configuration>

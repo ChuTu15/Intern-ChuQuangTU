@@ -1,0 +1,66 @@
+version: "3"
+
+networks:
+  loki:
+
+volumes:
+  loki_data:
+    driver: local
+  minio_data:
+    driver: local
+
+services:
+  loki:
+    image: grafana/loki:latest
+    volumes:
+      - ./loki-config:/etc/loki
+      - loki_data:/loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - loki
+
+  promtail:
+    image: grafana/promtail:2.4.2
+    volumes:
+      - /var/log:/var/log
+      - ./promtail-config:/etc/promtail
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - loki
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    networks:
+      - loki
+
+  minio:
+    image: minio/minio:latest
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    networks:
+      - loki
+    command: server ~ --address ':9000' --console-address ':9001'
+
+#  createbuckets:
+#    image: minio/mc
+#    networks:
+#      - loki
+#    depends_on:
+#      - minio
+#    entrypoint: >
+#      /bin/sh -c "
+#      /usr/bin/mc config host add myminio http://minio:9000 minioadmin minioadmin;
+#      /usr/bin/mc rm -r --force myminio/loki;
+#      /usr/bin/mc mb myminio/loki;
+#      /usr/bin/mc policy set public myminio/loki;
+#      exit 0;
+#      "
+
+
