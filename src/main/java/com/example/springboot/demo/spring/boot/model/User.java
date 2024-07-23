@@ -30,7 +30,6 @@ public class User implements Serializable, UserDetails {
     String email;
     String password ;
 
-    //Un utilisation put avoid messieurs roles
     @ManyToMany(fetch = FetchType.EAGER  , cascade = CascadeType.PERSIST)
     List<Role> roles ;
 
